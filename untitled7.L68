@@ -1,0 +1,44 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.04
+Created On: 11/5/2016 8:36:33 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00000000  =000A0000                  7  addrFirst   EQU $000A0000
+00000000  =000C0000                  8  addrLast    EQU $000C0000
+00000000  =0000ABC5                  9  value       EQU $ABC5
+00000000                            10  
+00001000                            11      ORG    $1000
+00001000                            12  START:                  ; first instruction of program
+00001000                            13  
+00001000                            14  * Put program code here
+00001000  41F9 000A0000             15              LEA     addrFirst, A0
+00001006  43F9 000C0000             16              LEA     addrLast, A1
+0000100C  203C 0000ABC5             17              MOVE.L  #value, D0
+00001012  2218                      18  loop        MOVE.L  (A0)+, D1
+00001014  B240                      19              CMP.W   D0, D1
+00001016  66FA                      20              BNE     loop            
+00001018                            21              
+00001018                            22  
+00001018  FFFF FFFF                 23      SIMHALT             ; halt simulator
+0000101C                            24  
+0000101C                            25  * Put variables and constants here
+0000101C                            26  
+0000101C                            27      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ADDRFIRST           A0000
+ADDRLAST            C0000
+LOOP                1012
+START               1000
+VALUE               ABC5
