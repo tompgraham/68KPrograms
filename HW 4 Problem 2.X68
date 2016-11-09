@@ -15,16 +15,21 @@ START:                  ; first instruction of program
             LEA     addrFirst, A0
             LEA     addrLast, A1
             MOVE.L  #value, D0
-loop        MOVE.L  (A0)+, D1
+loop        MOVE.L  A0, D1
             CMP.W   D0, D1
+            BEQ     save
+            CMP.L   (A0)+, A1
             BNE     loop            
-            
+save        MOVE.L A0, TARGET_ADDRESS            
 
     SIMHALT             ; halt simulator
 
 * Put variables and constants here
 
+TARGET_ADDRESS DS.L 1
+
     END    START        ; last line of source
+
 
 *~Font name~Courier New~
 *~Font size~10~

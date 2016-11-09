@@ -1,0 +1,51 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.04
+Created On: 11/8/2016 4:40:59 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : HW 4, Question 2
+00000000                             3  * Written by : Tom Graham
+00000000                             4  * Date       : 11/5/16
+00000000                             5  * Description: This program searches for word $ABC5
+00000000                             6  *-----------------------------------------------------------
+00000000  =000A0000                  7  addrFirst   EQU $000A0000
+00000000  =000C0000                  8  addrLast    EQU $000C0000
+00000000  =0000ABC5                  9  value       EQU $ABC5
+00000000                            10  
+00001000                            11      ORG    $1000
+00001000                            12  START:                  ; first instruction of program
+00001000                            13  
+00001000                            14  * Put program code here
+00001000  41F9 000A0000             15              LEA     addrFirst, A0
+00001006  43F9 000C0000             16              LEA     addrLast, A1
+0000100C  203C 0000ABC5             17              MOVE.L  #value, D0
+00001012  2208                      18  loop        MOVE.L  A0, D1
+00001014  B240                      19              CMP.W   D0, D1
+00001016  6700 0006                 20              BEQ     save
+0000101A  B3D8                      21              CMP.L   (A0)+, A1
+0000101C  66F4                      22              BNE     loop            
+0000101E  23C8 00001028             23  save        MOVE.L A0, TARGET_ADDRESS            
+00001024                            24  
+00001024  FFFF FFFF                 25      SIMHALT             ; halt simulator
+00001028                            26  
+00001028                            27  * Put variables and constants here
+00001028                            28  
+Line 29 ERROR: Invalid syntax
+00001028                            29  TARGET_ADDRESS DS.L 
+00001028                            30  
+00001028                            31      END    START        ; last line of source
+
+1 error detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ADDRFIRST           A0000
+ADDRLAST            C0000
+LOOP                1012
+SAVE                101E
+START               1000
+TARGET_ADDRESS      1028
+VALUE               ABC5
