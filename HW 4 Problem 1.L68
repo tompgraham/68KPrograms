@@ -1,18 +1,18 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.04
-Created On: 11/5/2016 8:13:29 PM
+Created On: 11/7/2016 5:57:58 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      :  HW 4 Problem 1
 00000000                             3  * Written by :  Tom Graham
 00000000                             4  * Date       :  11/5/16
-00000000                             5  * Description:  This program fills memory with zeros between
+00000000                             5  * Description:  This program fills memory with pattern between
 00000000                             6  *               $0000A000 and 0000A2FF
 00000000                             7  *-----------------------------------------------------------
 00000000                             8  
 00000000  =0000A000                  9  addrStart   EQU $0000A000
 00000000  =0000A2FF                 10  addrLast    EQU $0000A2FF
-00000000  =00000000                 11  data        EQU $00000000
+00000000  =5555AAAA                 11  data        EQU $5555AAAA
 00000000                            12  
 00001000                            13      ORG    $1000
 00001000                            14  START:                  ; first instruction of program
@@ -20,16 +20,16 @@ Created On: 11/5/2016 8:13:29 PM
 00001000                            16  * Put program code here
 00001000  41F9 0000A000             17              LEA     addrStart, A0
 00001006  43F9 0000A2FF             18              LEA     addrLast, A1
-0000100C  7000                      19              MOVE.L  #data, D0
-0000100E  20C0                      20  loop        MOVE.L  D0, (A0)+
-00001010  B1C9                      21              CMPA.L  A1,A0
-00001012  6FFA                      22              BLE     loop    
-00001014                            23      
-00001014  FFFF FFFF                 24      SIMHALT             ; halt simulator
-00001018                            25  
-00001018                            26  * Put variables and constants here
-00001018                            27  
-00001018                            28      END    START        ; last line of source
+0000100C  203C 5555AAAA             19              MOVE.L  #data, D0
+00001012  20C0                      20  loop        MOVE.L  D0, (A0)+
+00001014  B1C9                      21              CMPA.L  A1,A0
+00001016  6FFA                      22              BLE     loop    
+00001018                            23      
+00001018  FFFF FFFF                 24      SIMHALT             ; halt simulator
+0000101C                            25  
+0000101C                            26  * Put variables and constants here
+0000101C                            27  
+0000101C                            28      END    START        ; last line of source
 
 No errors detected
 No warnings generated
@@ -40,6 +40,6 @@ Symbol-name         Value
 -------------------------
 ADDRLAST            A2FF
 ADDRSTART           A000
-DATA                0
-LOOP                100E
+DATA                5555AAAA
+LOOP                1012
 START               1000
