@@ -1,0 +1,114 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.04
+Created On: 11/19/2016 7:14:40 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :  HW 4 Problem 1
+00000000                             3  * Written by :  Tom Graham
+00000000                             4  * Date       :  11/5/16
+00000000                             5  * Description:  This program fills memory with pattern between
+00000000                             6  *               $0000A000 and 0000A2FF
+00000000                             7  *-----------------------------------------------------------
+00000000                             8  
+00000000  =00002000                  9  addrFirst   EQU $00002000
+00000000  =0000A2FF                 10  addrLast    EQU $0000A2FF
+00000000  =0000FFFF                 11  data1       EQU $FFFF
+00000000  =0000AAAA                 12  data2       EQU $AAAA
+00000000  =00000001                 13  data3       EQU $0001
+00000000  =00000000                 14  count       EQU $0000
+00000000                            15  
+00001000                            16      ORG    $1000
+00001000                            17  START:                  ; first instruction of program
+00001000                            18  
+00001000  43F9 0000A2FF             19              LEA     addrLast, A1
+00001006  343C 0000                 20              MOVE.W  #count, D2
+0000100A                            21              
+0000100A  303C FFFF                 22              MOVE.W  #data1, D0 ;Test pattern 1
+0000100E  4EB9 0000105A             23              JSR     TEST
+00001014  4640                      24              NOT     D0
+00001016  4EB9 0000105A             25              JSR     TEST
+0000101C                            26              
+0000101C  303C AAAA                 27              MOVE.W  #data2, D0 ;Test pattern 2
+00001020  4EB9 0000105A             28              JSR     TEST
+00001026  4640                      29              NOT     D0
+00001028  4EB9 0000105A             30              JSR     TEST
+0000102E                            31              
+0000102E  303C 0001                 32              MOVE.W  #data3, D0 ; Test pattern 3
+00001032  4EB9 0000108C             33              JSR     TEST2
+00001038  303C 0001                 34              MOVE.W  #data3, D0
+0000103C  4640                      35              NOT     D0
+0000103E  4EB9 0000108C             36              JSR     TEST2
+00001044                            37  
+00001044  23CB 00001054             38              MOVE.L  A3, BAD_ADDRESS
+0000104A  33C2 00001058             39              MOVE.W  D2, BAD_ADDRESS_COUNT
+00001050                            40              
+00001050  FFFF FFFF                 41      SIMHALT             ; halt simulator
+00001054                            42  
+00001054                            43  *VARIABLES
+00001054                            44  
+00001054                            45  BAD_ADDRESS DS.L 1
+00001058                            46  BAD_ADDRESS_COUNT DS.W 1
+0000105A                            47  
+0000105A                            48  *SUBROUTINES   
+0000105A                            49   
+0000105A                            50  *Subroutine to perform the test
+0000105A  4EB9 00001068             51  TEST        JSR     FILL
+00001060  4EB9 00001074             52              JSR     READ
+00001066  4E75                      53              RTS
+00001068                            54  
+00001068                            55  
+00001068                            56  *Subroutine to fill address range
+00001068                            57  
+00001068  41F8 2000                 58  FILL        LEA     addrFirst, A0
+0000106C  30C0                      59  loop1       MOVE.W  D0, (A0)+
+0000106E  B0C9                      60              CMPA.W  A1,A0
+00001070  66FA                      61              BNE     loop1
+00001072  4E75                      62              RTS
+00001074                            63  
+00001074                            64  *Subroutine to compare memory
+00001074  41F8 2000                 65  READ        LEA     addrFirst, A0
+00001078  3210                      66  loop2       MOVE.W  (A0),D1
+0000107A  B240                      67              CMP.W   D0, D1
+0000107C  6700 0006                 68              BEQ     goodAdr ;Doesn't branch when it find a bad address
+00001080  2448                      69              MOVEA.L  A0, A2
+00001082  5242                      70              ADD.W   #1,D2
+00001084  5248                      71  goodAdr     ADD.W   #1,A0   ;moves through the addresses
+00001086  B0C9                      72              CMPA.W  A1, A0
+00001088  66EE                      73              BNE     loop2
+0000108A  4E75                      74              RTS
+0000108C                            75              
+0000108C                            76  *Subroutine to rotate test bits and test
+0000108C  163C 0000                 77  TEST2       MOVE.B  #0, D3  
+00001090  5243                      78  loop3       ADD.W   #1, D3
+00001092  4EB8 105A                 79              JSR     TEST
+00001096  E358                      80              ROL.W   #$01, D0
+00001098  B63C 0010                 81              CMP.B   #16, D3
+0000109C  66F2                      82              BNE     loop3     
+0000109E  4E75                      83              RTS
+000010A0                            84  
+000010A0                            85      END    START        ;last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ADDRFIRST           2000
+ADDRLAST            A2FF
+BAD_ADDRESS         1054
+BAD_ADDRESS_COUNT   1058
+COUNT               0
+DATA1               FFFF
+DATA2               AAAA
+DATA3               1
+FILL                1068
+GOODADR             1084
+LOOP1               106C
+LOOP2               1078
+LOOP3               1090
+READ                1074
+START               1000
+TEST                105A
+TEST2               108C
