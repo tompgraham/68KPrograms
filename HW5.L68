@@ -1,0 +1,131 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.04
+Created On: 11/20/2016 5:05:29 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :  HW 5
+00000000                             3  * Written by :  Tom Graham
+00000000                             4  * Date       :  11/5/16
+00000000                             5  * Description:  This is a memory test that fills a block of
+00000000                             6  *               memory with various patterns of data, reads
+00000000                             7  *               the data back, and notes the address of the
+00000000                             8  *               last bad address and the number of total
+00000000                             9  *               bad addresses
+00000000                            10  *               EC: The SF Movie about giants ants is THEM!
+00000000                            11  *-----------------------------------------------------------
+00000000                            12  
+00000000  =00002000                 13  addrFirst   EQU $00002000
+00000000  =0003FFFF                 14  addrLast    EQU $0003FFFF
+00000000  =0000FFFF                 15  data1       EQU $FFFF
+00000000  =0000AAAA                 16  data2       EQU $AAAA
+00000000  =00000001                 17  data3       EQU $0001
+00000000  =00000000                 18  count       EQU $0000
+00000000                            19  
+00001000                            20      ORG    $1000
+00001000                            21  START:                  ; first instruction of program
+00001000                            22  
+00001000  2E7C 000A0000             23              MOVEA.L #$000A0000, A7
+00001006  43F9 0003FFFF             24              LEA     addrLast, A1
+0000100C  363C 0000                 25              MOVE.W  #count, D3
+00001010                            26              
+00001010  303C FFFF                 27              MOVE.W  #data1, D0 ;Test pattern 1
+00001014  4EB9 00001070             28              JSR     TEST
+0000101A  4640                      29              NOT     D0
+0000101C  4EB9 00001070             30              JSR     TEST
+00001022                            31              
+00001022  303C AAAA                 32              MOVE.W  #data2, D0 ;Test pattern 2
+00001026  4EB9 00001070             33              JSR     TEST
+0000102C  4640                      34              NOT     D0
+0000102E  4EB9 00001070             35              JSR     TEST
+00001034                            36              
+00001034  303C 0001                 37              MOVE.W  #data3, D0 ; Test pattern 3
+00001038  4EB9 000010A6             38              JSR     TEST2
+0000103E  303C 0001                 39              MOVE.W  #data3, D0
+00001042  4640                      40              NOT     D0
+00001044  4EB9 000010A6             41              JSR     TEST2
+0000104A                            42  
+0000104A                            43              
+0000104A  33C3 0000106E             44              MOVE.W  D3, BAD_ADDRESS_COUNT ; Save total bad addresses
+00001050  23CA 00001066             45              MOVE.L  A2, BAD_ADDRESS ; Save recent bad address
+00001056  33C4 0000106A             46              MOVE.W  D4, BAD_ADDRESS_EXPECTED ; Save recent expected data
+0000105C  33C5 0000106C             47              MOVE.W  D5, BAD_ADDRESS_RECEIVED ; Save recent data received
+00001062                            48              
+00001062                            49              
+00001062  FFFF FFFF                 50      SIMHALT             ; halt simulator
+00001066                            51  
+00001066                            52  *VARIABLES
+00001066                            53  
+00001066                            54  BAD_ADDRESS DS.L 1
+0000106A                            55  BAD_ADDRESS_EXPECTED DS.W 1
+0000106C                            56  BAD_ADDRESS_RECEIVED DS.W 1
+0000106E                            57  BAD_ADDRESS_COUNT DS.W 1
+00001070                            58  
+00001070                            59  *SUBROUTINES   
+00001070                            60   
+00001070                            61  *Subroutine to perform the test
+00001070  4EB9 0000107E             62  TEST        JSR     FILL
+00001076  4EB9 0000108A             63              JSR     READ
+0000107C  4E75                      64              RTS
+0000107E                            65  
+0000107E                            66  
+0000107E                            67  *Subroutine to fill address range
+0000107E  41F8 2000                 68  FILL        LEA     addrFirst, A0
+00001082  30C0                      69  loop1       MOVE.W  D0, (A0)+
+00001084  B1C9                      70              CMPA.L  A1,A0
+00001086  6FFA                      71              BLE     loop1
+00001088  4E75                      72              RTS
+0000108A                            73  
+0000108A                            74  *Subroutine to compare memory
+0000108A  41F8 2000                 75  READ        LEA     addrFirst, A0
+0000108E  3210                      76  loop2       MOVE.W  (A0),D1
+00001090  B240                      77              CMP.W   D0, D1
+00001092  6700 000A                 78              BEQ     goodAdr ;Doesn't branch when it find a bad address
+00001096                            79              
+00001096  2448                      80              MOVEA.L  A0, A2
+00001098  5243                      81              ADD.W   #1,D3
+0000109A  3800                      82              MOVE.W  D0, D4
+0000109C  3A01                      83              MOVE.W  D1, D5
+0000109E                            84              
+0000109E                            85              
+0000109E  5448                      86  goodAdr     ADD.W   #2,A0   ;moves through the addresses
+000010A0  B1C9                      87              CMPA.L  A1, A0
+000010A2  6FEA                      88              BLE     loop2
+000010A4  4E75                      89              RTS
+000010A6                            90              
+000010A6                            91  *Subroutine to rotate test bits and test
+000010A6  143C 0000                 92  TEST2       MOVE.B  #0, D2  
+000010AA  5242                      93  loop3       ADD.W   #1, D2
+000010AC  4EB8 1070                 94              JSR     TEST
+000010B0  E358                      95              ROL.W   #$01, D0
+000010B2  B43C 0010                 96              CMP.B   #16, D2
+000010B6  66F2                      97              BNE     loop3     
+000010B8  4E75                      98              RTS
+000010BA                            99  
+000010BA                           100      END START ;last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ADDRFIRST           2000
+ADDRLAST            3FFFF
+BAD_ADDRESS         1066
+BAD_ADDRESS_COUNT   106E
+BAD_ADDRESS_EXPECTED  106A
+BAD_ADDRESS_RECEIVED  106C
+COUNT               0
+DATA1               FFFF
+DATA2               AAAA
+DATA3               1
+FILL                107E
+GOODADR             109E
+LOOP1               1082
+LOOP2               108E
+LOOP3               10AA
+READ                108A
+START               1000
+TEST                1070
+TEST2               10A6
